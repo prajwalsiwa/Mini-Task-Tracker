@@ -1,10 +1,11 @@
 import "./App.css";
+import TaskTracker from "./pages/TaskTracker";
 
 function App() {
   return (
-    <>
-      <div className="text-red-500">tailwind color check</div>
-    </>
+    <div className=" w-full flex  justify-center items-center">
+      <TaskTracker />
+    </div>
   );
 }
 
