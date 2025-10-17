@@ -1,12 +1,21 @@
+import type { Tasks } from "../types/types";
 import TaskItem from "./TaskItem";
 
-function TaskList() {
+interface TaskListProps {
+  tasks: Tasks[] | [];
+}
+
+function TaskList({ tasks }: TaskListProps) {
   return (
-    <div>
-      {Array.from({ length: 4 }).map(() => (
-        <TaskItem />
+    <div className="divide-y divide-slate-200 dark:divide-slate-700">
+      {tasks.map((tasks) => (
+        <TaskItem
+          title={tasks.title}
+          dueDate={tasks.dueDate}
+          status={tasks.status}
+          id={tasks.id}
+        />
       ))}
-      <TaskItem />
     </div>
   );
 }

@@ -1,20 +1,56 @@
+import CheckCircleIcon from "./icons/CheckCircleIcon";
 import ClockIcon from "./icons/ClockIcon";
 import EditIcon from "./icons/EditIcon";
 import TrashIcon from "./icons/TrashIcon";
 
-function TaskItem() {
+interface TaskItemProps {
+  id: string;
+  title: string;
+  dueDate: string;
+  status: string;
+}
+
+const formatDate = (date: string) => {
+  return new Date(date).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  });
+};
+
+function TaskItem({ title, dueDate, status, id }: TaskItemProps) {
+  console.log(status);
+  const overDue =
+    status === "Pending" &&
+    new Date(dueDate) < new Date(new Date().toDateString());
+
+  console.log(overDue, id);
+
   return (
     <li className="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <div className="flex items-center gap-4 flex-1 cursor-pointer">
-        <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gray-200 text-gray-600">
-          <ClockIcon className="w-5 h-5" />
+        <div
+          className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center  bg-green-200  text-gray-600 ${
+            status !== "Done" && "bg-orange-200"
+          }`}
+        >
+          {status === "Done" ? (
+            <CheckCircleIcon className="w-5 h-5" />
+          ) : (
+            <ClockIcon className="w-5 h-5" />
+          )}
         </div>
         <div className="flex-1">
           <p className="font-semibold text-slate-800 dark:text-slate-100">
-            Task Title
+            {title}
           </p>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Due: Month Day, Year
+          <p
+            className={`text-sm  ${
+              overDue ? "text-red-500 font-semibold" : "text-slate-500"
+            }`}
+          >
+            Due: {formatDate(dueDate)}
           </p>
         </div>
       </div>
