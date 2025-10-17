@@ -1,0 +1,40 @@
+import ClockIcon from "./icons/ClockIcon";
+import EditIcon from "./icons/EditIcon";
+import TrashIcon from "./icons/TrashIcon";
+
+function TaskItem() {
+  return (
+    <li className="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex items-center gap-4 flex-1 cursor-pointer">
+        <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gray-200 text-gray-600">
+          <ClockIcon className="w-5 h-5" />
+        </div>
+        <div className="flex-1">
+          <p className="font-semibold text-slate-800 dark:text-slate-100">
+            Task Title
+          </p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            Due: Month Day, Year
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2 self-end sm:self-center">
+        <button
+          className="p-2 text-slate-500 hover:text-brand-primary dark:hover:text-brand-secondary rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200"
+          aria-label="Edit task"
+        >
+          <EditIcon className="w-5 h-5" />
+        </button>
+        <button
+          className="p-2 text-slate-500 hover:text-red-500 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200"
+          aria-label="Delete task"
+        >
+          <TrashIcon className="w-5 h-5" />
+        </button>
+      </div>
+    </li>
+  );
+}
+
+export default TaskItem;
