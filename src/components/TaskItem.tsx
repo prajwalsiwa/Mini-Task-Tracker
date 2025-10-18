@@ -7,6 +7,7 @@ import TrashIcon from "./icons/TrashIcon";
 interface TaskItemProps {
   task: Task;
   onEdit: (task: Task) => void;
+  onDelete: (task: Task) => void;
 }
 
 const formatDate = (date: string) => {
@@ -18,7 +19,7 @@ const formatDate = (date: string) => {
   });
 };
 
-function TaskItem({ task, onEdit }: TaskItemProps) {
+function TaskItem({ task, onEdit, onDelete }: TaskItemProps) {
   console.log(task.status);
   const overDue =
     status === "Pending" &&
@@ -65,6 +66,7 @@ function TaskItem({ task, onEdit }: TaskItemProps) {
         <button
           className="p-2 text-slate-500 !rounded-full  !bg-slate-500 hover:!bg-slate-200 dark:hover:bg-slate-600 hover:text-red-500 transition-colors duration-200"
           aria-label="Delete task"
+          onClick={() => onDelete(task)}
         >
           <TrashIcon className="w-5 h-5 hover:text-red-500 text-white" />
         </button>
