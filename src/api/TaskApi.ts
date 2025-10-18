@@ -83,3 +83,24 @@ export const addTask = (
     }, API_DELAY);
   });
 };
+
+export const editTask = (taskData: Task): Promise<Task> => {
+  const tasks = getStoredTask();
+
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const taskExists = tasks.some((t: Task) => t.id === taskData.id);
+
+      if (!taskExists) {
+        return reject(new Error("Task not found"));
+      }
+
+      const updatedTasks = tasks.map((t: Task) =>
+        t.id === taskData.id ? taskData : t
+      );
+
+      saveTask(updatedTasks);
+      resolve(taskData);
+    }, API_DELAY);
+  });
+};
