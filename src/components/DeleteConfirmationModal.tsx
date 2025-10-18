@@ -31,7 +31,7 @@ function DeleteConfirmationModal({
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4">
-          Confirm Delete
+            Confirm Delete
         </h2>
         <p className="text-slate-700 dark:text-slate-300 mb-6">
           Are you sure you want to delete "{task.title}"?
