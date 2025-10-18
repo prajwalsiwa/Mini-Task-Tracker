@@ -1,13 +1,12 @@
+import type { Task } from "../types/types";
 import CheckCircleIcon from "./icons/CheckCircleIcon";
 import ClockIcon from "./icons/ClockIcon";
 import EditIcon from "./icons/EditIcon";
 import TrashIcon from "./icons/TrashIcon";
 
 interface TaskItemProps {
-  id: string;
-  title: string;
-  dueDate: string;
-  status: string;
+  task: Task;
+  onEdit: (task: Task) => void;
 }
 
 const formatDate = (date: string) => {
@@ -19,13 +18,13 @@ const formatDate = (date: string) => {
   });
 };
 
-function TaskItem({ title, dueDate, status, id }: TaskItemProps) {
-  console.log(status);
+function TaskItem({ task, onEdit }: TaskItemProps) {
+  console.log(task.status);
   const overDue =
     status === "Pending" &&
-    new Date(dueDate) < new Date(new Date().toDateString());
+    new Date(task.dueDate) < new Date(new Date().toDateString());
 
-  console.log(overDue, id);
+  console.log(overDue, task.id);
 
   return (
     <li className="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -43,14 +42,14 @@ function TaskItem({ title, dueDate, status, id }: TaskItemProps) {
         </div>
         <div className="flex-1">
           <p className="font-semibold text-slate-800 dark:text-slate-100">
-            {title}
+            {task.title}
           </p>
           <p
             className={`text-sm  ${
               overDue ? "text-red-500 font-semibold" : "text-slate-500"
             }`}
           >
-            Due: {formatDate(dueDate)}
+            Due: {formatDate(task.dueDate)}
           </p>
         </div>
       </div>
@@ -59,6 +58,7 @@ function TaskItem({ title, dueDate, status, id }: TaskItemProps) {
         <button
           className="p-2  text-slate-500  bhover:text-brand-primary dark:hover:text-brand-secondary !rounded-full !bg-slate-500 hover:!bg-slate-200 dark:!hover:bg-slate-600 transition-colors duration-200"
           aria-label="Edit task"
+          onClick={() => onEdit(task)}
         >
           <EditIcon className="w-5 h-5 text-white hover:text-slate-500" />
         </button>
