@@ -57,16 +57,16 @@ function TaskItem({ title, dueDate, status, id }: TaskItemProps) {
 
       <div className="flex items-center gap-2 self-end sm:self-center">
         <button
-          className="p-2 text-slate-500 hover:text-brand-primary dark:hover:text-brand-secondary rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200"
+          className="p-2  text-slate-500  bhover:text-brand-primary dark:hover:text-brand-secondary !rounded-full !bg-slate-500 hover:!bg-slate-200 dark:!hover:bg-slate-600 transition-colors duration-200"
           aria-label="Edit task"
         >
-          <EditIcon className="w-5 h-5" />
+          <EditIcon className="w-5 h-5 text-white hover:text-slate-500" />
         </button>
         <button
-          className="p-2 text-slate-500 hover:text-red-500 rounded-full hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors duration-200"
+          className="p-2 text-slate-500 !rounded-full  !bg-slate-500 hover:!bg-slate-200 dark:hover:bg-slate-600 hover:text-red-500 transition-colors duration-200"
           aria-label="Delete task"
         >
-          <TrashIcon className="w-5 h-5" />
+          <TrashIcon className="w-5 h-5 hover:text-red-500 text-white" />
         </button>
       </div>
     </li>
