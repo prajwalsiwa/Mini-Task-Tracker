@@ -1,6 +1,6 @@
 export type Status = 'Pending' | 'Done';
 
-export type Tasks = {
+export type Task = {
     id: string;
     title: string;
     dueDate: string;

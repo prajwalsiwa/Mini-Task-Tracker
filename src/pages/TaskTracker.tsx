@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import TaskList from "../components/TaskList";
-import type { Tasks } from "../types/types";
+import type { Task } from "../types/types";
 import { getTasks } from "../api/TaskApi";
 
 function TaskTracker() {
-  const [tasks, setTasks] = useState<Tasks[] | []>([]);
+  const [tasks, setTasks] = useState<Task[] | []>([]);
 
   useEffect(() => {
     const fetchTasks = async () => {
       const tasks = await getTasks();
-      setTasks(tasks as Tasks[]);
+      setTasks(tasks as Task[]);
     };
 
     fetchTasks();

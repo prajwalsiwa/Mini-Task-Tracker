@@ -1,8 +1,8 @@
-import type { Tasks } from "../types/types";
+import type { Task } from "../types/types";
 import TaskItem from "./TaskItem";
 
 interface TaskListProps {
-  tasks: Tasks[] | [];
+  tasks: Task[] | [];
 }
 
 function TaskList({ tasks }: TaskListProps) {
