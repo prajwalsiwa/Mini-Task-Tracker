@@ -1,9 +1,9 @@
-import type { Tasks } from "../types/types";
+import type { Task } from "../types/types";
 
 const STORAGE_KEY = "tasks";
 const API_DELAY = 300;
 
-const getInitialTasks = (): Tasks[] => {
+const getInitialTasks = (): Task[] => {
   return [
     {
       id: "1",
@@ -40,7 +40,15 @@ const getStoredTask = () => {
   return initialTasks;
 };
 
-//mock api for get tasks 
+const saveTask = (tasks: Task[]) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  } catch (err) {
+    console.error("Error saving tasks to localStorage", err);
+  }
+};
+
+//mock api for get tasks
 
 export const getTasks = () => {
   return new Promise((resolve) => {
@@ -51,3 +59,27 @@ export const getTasks = () => {
   });
 };
 
+// mock api for adding tasks
+
+export const addTask = (
+  newTaskData: Omit<Task, "id" | "status">
+): Promise<Task> => {
+  const tasks = getStoredTask();
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const newTask: Task = {
+        ...newTaskData,
+        id: Date.now().toString(),
+        status: "Pending",
+      };
+
+      if (tasks.some((task: Task) => task.id === newTask.id)) {
+        return reject(new Error("Task already exists"));
+      }
+
+      const updatedTasks = [...tasks, newTask];
+      saveTask(updatedTasks);
+      resolve(newTask);
+    }, API_DELAY);
+  });
+};
