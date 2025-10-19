@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import Header from "../components/Header";
 import TaskList from "../components/TaskList";
 import type { SortOption, Status, Task } from "../types/types";
@@ -11,7 +11,7 @@ import Toast from "../components/Toast";
 import { useToast } from "../hooks/useToast";
 
 function TaskTracker() {
-  const [tasks, setTasks] = useState<Task[] | []>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
@@ -22,35 +22,42 @@ function TaskTracker() {
     key: "dueDate",
     direction: "asc",
   });
-  const { toast, showToast, hideToast } = useToast();
 
+  const { toast, showToast, hideToast } = useToast();
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
+  // Fetch tasks
   useEffect(() => {
     const fetchTasks = async () => {
-      const tasks = await getTasks();
-      setTasks(tasks as Task[]);
+      try {
+        const tasks = await getTasks();
+        setTasks(tasks as Task[]);
+      } catch (err) {
+        showToast("Failed to fetch tasks", "error");
+        console.error(err);
+      }
     };
 
     fetchTasks();
-  }, []);
+  }, [showToast]);
 
-  const handleAddTaskClick = () => {
+  // Handlers
+  const handleAddTaskClick = useCallback(() => {
     setTaskToEdit(null);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const handleEditTaskClick = (task: Task) => {
+  const handleEditTaskClick = useCallback((task: Task) => {
     setTaskToEdit(task);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const handleDeleteTaskClick = (task: Task) => {
+  const handleDeleteTaskClick = useCallback((task: Task) => {
     setTaskToDelete(task);
     setIsDeleteModalOpen(true);
-  };
+  }, []);
 
-  const handleToggleStatus = async (task: Task) => {
+  const handleToggleStatus = useCallback(async (task: Task) => {
     const updatedTask: Task = {
       ...task,
       status: task.status === "Pending" ? "Done" : "Pending",
@@ -59,17 +66,19 @@ function TaskTracker() {
     try {
       await editTask(updatedTask);
       setTasks((prev) => prev.map((t) => (t.id === task.id ? updatedTask : t)));
+      showToast("Task status updated", "success");
     } catch (err) {
       console.error("Failed to toggle status", err);
+      showToast("Failed to update status", "error");
     }
-  };
+  }, [showToast]);
 
-  const handleSaveTask = async (task: Omit<Task, "id"> | Task) => {
+  const handleSaveTask = useCallback(async (task: Omit<Task, "id"> | Task) => {
     try {
       if ("id" in task) {
         const updatedTask = await editTask(task);
         setTasks((prev) =>
-          prev.map((t) => (t.id === updatedTask.id ? task : t))
+          prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
         );
         showToast("Task updated successfully", "success");
       } else {
@@ -83,9 +92,9 @@ function TaskTracker() {
     } finally {
       setIsModalOpen(false);
     }
-  };
+  }, [showToast]);
 
-  const handleConfirmDelete = async (taskId: string) => {
+  const handleConfirmDelete = useCallback(async (taskId: string) => {
     try {
       await deleteTask(taskId);
       setTasks((prev) => prev.filter((t) => t.id !== taskId));
@@ -96,43 +105,37 @@ function TaskTracker() {
       setIsDeleteModalOpen(false);
       setTaskToDelete(null);
     }
-  };
+  }, [showToast]);
 
-  // filtering and sorting logics
-
-  const filteredAndSortedTasks = tasks
-    .filter((task) => {
-      const matchesSearch = task.title
-        .toLowerCase()
-        .includes(debouncedSearchTerm.toLowerCase());
-
-      const matchesFilter =
-        activeFilter === "All" ? true : task.status === activeFilter;
-
-      return matchesSearch && matchesFilter;
-    })
-    .sort((a, b) => {
-      const { key, direction } = sortOption;
-
-      if (key === "title") {
-        return direction === "asc"
-          ? a.title.localeCompare(b.title)
-          : b.title.localeCompare(a.title);
-      }
-
-      if (key === "dueDate") {
-        const dateA = new Date(a.dueDate).getTime();
-        const dateB = new Date(b.dueDate).getTime();
-        return direction === "asc" ? dateA - dateB : dateB - dateA;
-      }
-
-      return 0;
-    });
-
-  console.log(tasks, "tasks");
+  // filter and sort tasks
+  const filteredAndSortedTasks = useMemo(() => {
+    return tasks
+      .filter((task) => {
+        const matchesSearch = task.title
+          .toLowerCase()
+          .includes(debouncedSearchTerm.toLowerCase());
+        const matchesFilter =
+          activeFilter === "All" ? true : task.status === activeFilter;
+        return matchesSearch && matchesFilter;
+      })
+      .sort((a, b) => {
+        const { key, direction } = sortOption;
+        if (key === "title") {
+          return direction === "asc"
+            ? a.title.localeCompare(b.title)
+            : b.title.localeCompare(a.title);
+        }
+        if (key === "dueDate") {
+          const dateA = new Date(a.dueDate).getTime();
+          const dateB = new Date(b.dueDate).getTime();
+          return direction === "asc" ? dateA - dateB : dateB - dateA;
+        }
+        return 0;
+      });
+  }, [tasks, debouncedSearchTerm, activeFilter, sortOption]);
 
   return (
-    <div className="  dark:text-slate-200 w-full transition-colors duration-300">
+    <div className="dark:text-slate-200 w-full transition-colors duration-300">
       <div className="container mx-auto max-w-4xl p-4 md:p-8">
         <Header onAddTask={handleAddTaskClick} />
         <main className="mt-8 bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
@@ -179,7 +182,9 @@ function TaskTracker() {
         onConfirm={handleConfirmDelete}
       />
       {toast && (
-        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
+        <div className="fixed top-4 right-4 z-50">
+          <Toast message={toast.message} type={toast.type} onClose={hideToast} />
+        </div>
       )}
     </div>
   );
