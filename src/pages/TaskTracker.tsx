@@ -7,6 +7,8 @@ import TaskFormModal from "../components/TaskFormModal";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 import Controls from "../components/Controls";
 import { useDebounce } from "../hooks/useDebounce";
+import Toast from "../components/Toast";
+import { useToast } from "../hooks/useToast";
 
 function TaskTracker() {
   const [tasks, setTasks] = useState<Task[] | []>([]);
@@ -20,6 +22,7 @@ function TaskTracker() {
     key: "dueDate",
     direction: "asc",
   });
+  const { toast, showToast, hideToast } = useToast();
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
@@ -62,22 +65,33 @@ function TaskTracker() {
   };
 
   const handleSaveTask = async (task: Omit<Task, "id"> | Task) => {
-    if ("id" in task) {
-      const updatedTask = await editTask(task);
-      setTasks((prev) => prev.map((t) => (t.id === updatedTask.id ? task : t)));
-    } else {
-      const newTask = await addTask(task);
-      setTasks((prev) => [newTask, ...prev]);
+    try {
+      if ("id" in task) {
+        const updatedTask = await editTask(task);
+        setTasks((prev) =>
+          prev.map((t) => (t.id === updatedTask.id ? task : t))
+        );
+        showToast("Task updated successfully", "success");
+      } else {
+        const newTask = await addTask(task);
+        setTasks((prev) => [newTask, ...prev]);
+        showToast("Task added successfully", "success");
+      }
+    } catch (err) {
+      showToast("Something went wrong!", "error");
+      console.error(err);
+    } finally {
+      setIsModalOpen(false);
     }
-    setIsModalOpen(false);
   };
 
   const handleConfirmDelete = async (taskId: string) => {
     try {
       await deleteTask(taskId);
       setTasks((prev) => prev.filter((t) => t.id !== taskId));
-    } catch (err) {
-      console.error(err);
+      showToast("Task deleted successfully", "info");
+    } catch {
+      showToast("Failed to delete task", "error");
     } finally {
       setIsDeleteModalOpen(false);
       setTaskToDelete(null);
@@ -153,6 +167,9 @@ function TaskTracker() {
         }}
         onConfirm={handleConfirmDelete}
       />
+      {toast && (
+        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
+      )}
     </div>
   );
 }
