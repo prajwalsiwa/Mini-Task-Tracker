@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import TaskList from "../components/TaskList";
-import type { Status, Task } from "../types/types";
+import type { SortOption, Status, Task } from "../types/types";
 import { addTask, deleteTask, editTask, getTasks } from "../api/TaskApi";
 import TaskFormModal from "../components/TaskFormModal";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
@@ -15,6 +15,10 @@ function TaskTracker() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState<Status | "All">("All");
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+  const [sortOption, setSortOption] = useState<SortOption>({
+    key: "dueDate",
+    direction: "asc",
+  });
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -86,6 +90,8 @@ function TaskTracker() {
             setSearchTerm={setSearchTerm}
             activeFilter={activeFilter}
             setActiveFilter={setActiveFilter}
+            sortOption={sortOption}
+            setSortOption={setSortOption}
           />
           <TaskList
             tasks={filteredTasks}

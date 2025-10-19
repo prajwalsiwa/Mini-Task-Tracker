@@ -6,3 +6,8 @@ export type Task = {
     dueDate: string;
     status: Status;
 }
+
+export interface SortOption {
+    key: keyof Pick<Task, 'title' | 'dueDate'>;
+    direction: 'asc' | 'desc';
+}
