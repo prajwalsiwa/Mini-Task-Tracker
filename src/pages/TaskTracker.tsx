@@ -67,16 +67,36 @@ function TaskTracker() {
     }
   };
 
-  const filteredTasks = tasks.filter((task) => {
-    const matchesSearch = task.title
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+  // filtering and sorting logics
 
-    const matchesFilter =
-      activeFilter === "All" ? true : task.status === activeFilter;
+  const filteredAndSortedTasks = tasks
+    .filter((task) => {
+      const matchesSearch = task.title
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
-    return matchesSearch && matchesFilter;
-  });
+      const matchesFilter =
+        activeFilter === "All" ? true : task.status === activeFilter;
+
+      return matchesSearch && matchesFilter;
+    })
+    .sort((a, b) => {
+      const { key, direction } = sortOption;
+
+      if (key === "title") {
+        return direction === "asc"
+          ? a.title.localeCompare(b.title)
+          : b.title.localeCompare(a.title);
+      }
+
+      if (key === "dueDate") {
+        const dateA = new Date(a.dueDate).getTime();
+        const dateB = new Date(b.dueDate).getTime();
+        return direction === "asc" ? dateA - dateB : dateB - dateA;
+      }
+
+      return 0;
+    });
 
   console.log(tasks, "tasks");
 
@@ -94,7 +114,7 @@ function TaskTracker() {
             setSortOption={setSortOption}
           />
           <TaskList
-            tasks={filteredTasks}
+            tasks={filteredAndSortedTasks}
             onEdit={handleEditTaskClick}
             onDelete={handleDeleteTaskClick}
           />

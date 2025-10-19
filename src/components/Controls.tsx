@@ -89,7 +89,7 @@ function Controls({
 
         <button
           onClick={toggleSortDirection}
-          className="p-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-brand-primary"
+          className="p-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:!bg-slate-700  dark:hover:!bg-slate-600 focus:!outline-none focus:!ring-2 focus:!ring-brand-primary"
         >
           {sortOption.direction === "asc" ? (
             <SortAscIcon className="h-5 w-5" />
