@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import TaskList from "../components/TaskList";
-import type { Task } from "../types/types";
+import type { Status, Task } from "../types/types";
 import { addTask, deleteTask, editTask, getTasks } from "../api/TaskApi";
 import TaskFormModal from "../components/TaskFormModal";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
+import Controls from "../components/Controls";
 
 function TaskTracker() {
   const [tasks, setTasks] = useState<Task[] | []>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeFilter, setActiveFilter] = useState<Status | "All">("All");
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
   useEffect(() => {
@@ -49,16 +52,27 @@ function TaskTracker() {
   };
 
   const handleConfirmDelete = async (taskId: string) => {
-          try {
-            await deleteTask(taskId);
-            setTasks((prev) => prev.filter((t) => t.id !== taskId));
-          } catch (err) {
-            console.error(err);
-          } finally {
-            setIsDeleteModalOpen(false);
-            setTaskToDelete(null);
-          }
-        }
+    try {
+      await deleteTask(taskId);
+      setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsDeleteModalOpen(false);
+      setTaskToDelete(null);
+    }
+  };
+
+  const filteredTasks = tasks.filter((task) => {
+    const matchesSearch = task.title
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+
+    const matchesFilter =
+      activeFilter === "All" ? true : task.status === activeFilter;
+
+    return matchesSearch && matchesFilter;
+  });
 
   console.log(tasks, "tasks");
 
@@ -66,9 +80,19 @@ function TaskTracker() {
     <div className=" text-slate-800 dark:text-slate-200 w-full transition-colors duration-300">
       <div className="container mx-auto max-w-4xl p-4 md:p-8">
         <Header onAddTask={handleAddTaskClick} />
-        <div className=" bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
-          <TaskList tasks={tasks} onEdit={handleEditTaskClick} onDelete={handleDeleteTaskClick} />
-        </div>
+        <main className="mt-8 bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
+          <Controls
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            activeFilter={activeFilter}
+            setActiveFilter={setActiveFilter}
+          />
+          <TaskList
+            tasks={filteredTasks}
+            onEdit={handleEditTaskClick}
+            onDelete={handleDeleteTaskClick}
+          />
+        </main>
       </div>
       <TaskFormModal
         isOpen={isModalOpen}
