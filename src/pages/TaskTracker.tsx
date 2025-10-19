@@ -132,7 +132,7 @@ function TaskTracker() {
   console.log(tasks, "tasks");
 
   return (
-    <div className=" text-slate-800 dark:text-slate-200 w-full transition-colors duration-300">
+    <div className="  dark:text-slate-200 w-full transition-colors duration-300">
       <div className="container mx-auto max-w-4xl p-4 md:p-8">
         <Header onAddTask={handleAddTaskClick} />
         <main className="mt-8 bg-white dark:bg-slate-800 rounded-xl shadow-lg overflow-hidden">
@@ -144,12 +144,23 @@ function TaskTracker() {
             sortOption={sortOption}
             setSortOption={setSortOption}
           />
-          <TaskList
-            tasks={filteredAndSortedTasks}
-            onEdit={handleEditTaskClick}
-            onDelete={handleDeleteTaskClick}
-            onToggleStatus={handleToggleStatus}
-          />
+          <div className="max-h-[30rem] overflow-y-auto">
+            {filteredAndSortedTasks.length > 0 ? (
+              <TaskList
+                tasks={filteredAndSortedTasks}
+                onEdit={handleEditTaskClick}
+                onDelete={handleDeleteTaskClick}
+                onToggleStatus={handleToggleStatus}
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full py-16 text-center text-slate-500 dark:text-slate-400">
+                <p className="text-lg font-medium">No tasks found</p>
+                <p className="mt-2 text-sm">
+                  Try adjusting your search or filter, or add a new task!
+                </p>
+              </div>
+            )}
+          </div>
         </main>
       </div>
       <TaskFormModal
