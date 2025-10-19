@@ -6,6 +6,7 @@ import { addTask, deleteTask, editTask, getTasks } from "../api/TaskApi";
 import TaskFormModal from "../components/TaskFormModal";
 import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 import Controls from "../components/Controls";
+import { useDebounce } from "../hooks/useDebounce";
 
 function TaskTracker() {
   const [tasks, setTasks] = useState<Task[] | []>([]);
@@ -19,6 +20,8 @@ function TaskTracker() {
     key: "dueDate",
     direction: "asc",
   });
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -87,7 +90,7 @@ function TaskTracker() {
     .filter((task) => {
       const matchesSearch = task.title
         .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+        .includes(debouncedSearchTerm.toLowerCase());
 
       const matchesFilter =
         activeFilter === "All" ? true : task.status === activeFilter;
