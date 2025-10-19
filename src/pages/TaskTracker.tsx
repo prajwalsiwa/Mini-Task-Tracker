@@ -64,7 +64,7 @@ function TaskTracker() {
       setTasks((prev) => prev.map((t) => (t.id === updatedTask.id ? task : t)));
     } else {
       const newTask = await addTask(task);
-      setTasks((prev) => [...prev, newTask]);
+      setTasks((prev) => [newTask, ...prev]);
     }
     setIsModalOpen(false);
   };

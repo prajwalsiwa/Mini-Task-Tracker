@@ -77,7 +77,7 @@ export const addTask = (
         return reject(new Error("Task already exists"));
       }
 
-      const updatedTasks = [...tasks, newTask];
+      const updatedTasks = [newTask, ...tasks];
       saveTask(updatedTasks);
       resolve(newTask);
     }, API_DELAY);
