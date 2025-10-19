@@ -78,7 +78,7 @@ function TaskFormModal({
                 htmlFor="title"
                 className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
               >
-                Title
+                Title <span>*</span>
               </label>
               <input
                 type="text"
@@ -101,7 +101,7 @@ function TaskFormModal({
                 htmlFor="dueDate"
                 className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1"
               >
-                Due Date
+                Due Date <span>*</span>
               </label>
               <input
                 type="date"
