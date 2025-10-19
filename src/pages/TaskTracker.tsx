@@ -44,6 +44,20 @@ function TaskTracker() {
     setIsDeleteModalOpen(true);
   };
 
+  const handleToggleStatus = async (task: Task) => {
+    const updatedTask: Task = {
+      ...task,
+      status: task.status === "Pending" ? "Done" : "Pending",
+    };
+
+    try {
+      await editTask(updatedTask);
+      setTasks((prev) => prev.map((t) => (t.id === task.id ? updatedTask : t)));
+    } catch (err) {
+      console.error("Failed to toggle status", err);
+    }
+  };
+
   const handleSaveTask = async (task: Omit<Task, "id"> | Task) => {
     if ("id" in task) {
       const updatedTask = await editTask(task);
@@ -117,6 +131,7 @@ function TaskTracker() {
             tasks={filteredAndSortedTasks}
             onEdit={handleEditTaskClick}
             onDelete={handleDeleteTaskClick}
+            onToggleStatus={handleToggleStatus}
           />
         </main>
       </div>
